@@ -1,20 +1,29 @@
 import { Form, Button } from "react-bootstrap";
 import ListaTareas from "./ListaTareas";
-import { useState } from "react";
+import { useState , useEffect} from "react";
+
 const FormularioTarea = () => {
+  let tareasDelLocalStorage = JSON.parse(localStorage.getItem('listaTareas')) || [];
   const [tarea, setTarea] = useState("");
-  const [tareas, setTareas] = useState([]);
+  const [tareas, setTareas] = useState(tareasDelLocalStorage);
+
+  //ciclo de vida
+  useEffect(()=>{
+    // console.log('aqui deberia guardar en localstorage');
+    localStorage.setItem('listaTareas', JSON.stringify(tareas));
+  },[tareas]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //tareas.push (Es un metodo mutable, y NO SE PUEDE MODIFICAR UN STATE, en cambio si fuera un array normal guardado en cualquier variable si podría hacerlo)
-    setTareas([...tareas, tarea])
-    setTarea('')
+    setTareas([...tareas, tarea]);
+    setTarea("");
   };
-const borrarTarea =(nombreTarea)=>{
-let copiaTareas = tareas.filter((itemTarea)=>itemTarea!== nombreTarea);
-setTareas(copiaTareas);
-}
+
+  const borrarTarea = (nombreTarea)=>{
+    let copiaTareas = tareas.filter((itemTarea)=> itemTarea !== nombreTarea );
+    setTareas(copiaTareas);
+  }
+
   return (
     <>
       <Form onSubmit={handleSubmit}>
@@ -22,15 +31,15 @@ setTareas(copiaTareas);
           <Form.Control
             type="text"
             placeholder="Ingrese una tarea"
-            onChange={(e)=>setTarea(e.target.value)}
-            value={tarea}/>
-            
+            onChange={(e) => setTarea(e.target.value)}
+            value={tarea}
+          />
           <Button variant="primary" type="submit">
             Agregar
           </Button>
         </Form.Group>
       </Form>
-      <ListaTareas tareas ={tareas} borrarTarea={borrarTarea}></ListaTareas>
+      <ListaTareas tareas={tareas} borrarTarea={borrarTarea}></ListaTareas>
     </>
   );
 };
